@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Limazyan Studio Pro v3</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8e44ad"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#000;overflow:hidden}
+.phone{width:100%;max-width:430px;height:100dvh;position:relative;overflow:hidden;background:#111;margin:0 auto}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.active{display:flex;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+.bg{position:absolute;inset:0;background:linear-gradient(160deg,#3a1c71,#d76d77 55%,#ffaf7b)}
+.bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 35%,transparent 55%,rgba(0,0,0,.85))}
+.top{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px;color:#fff;padding-top:max(14px,env(safe-area-inset-top))}
+.top b{cursor:pointer}
+.avatar{width:42px;height:42px;border-radius:50%;background:#ff2d92;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #fff;flex-shrink:0}
+.live{position:relative;z-index:10;margin:6px 14px 0 auto;background:#ff2d55;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:bold;width:fit-content;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.comments{position:relative;z-index:10;margin:auto 14px 110px 14px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.comment{background:rgba(0,0,0,.6);color:#fff;padding:8px 12px;border-radius:14px;font-size:13px;width:fit-content}
+.comment b{color:#ffcc00}
+.side{position:absolute;right:12px;top:45%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:16px;align-items:center;color:#fff;text-align:center}
+.side div{cursor:pointer;transition:transform .15s}
+.side div:active{transform:scale(1.2)}
+.side span{font-size:11px;display:block;margin-top:2px}
+.bottom{position:absolute;bottom:0;left:0;right:0;background:#000;padding:10px 14px calc(14px + env(safe-area-inset-bottom));z-index:50;border-top:1px solid #222}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:0 4px;color:#888;font-size:11px;text-align:center}
+.nav-item{cursor:pointer;padding:6px 8px;border-radius:12px;flex:1}
+.nav-item.active{color:#fff}
+.nav-item i{font-size:24px;display:block;font-style:normal}
+.plus{width:58px;height:58px;background:#ff2d92;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;box-shadow:0 0 0 4px #000;margin-top:-26px;cursor:pointer;flex-shrink:0}
+.sheet{position:absolute;bottom:0;left:0;right:0;background:#1a1a1a;border-radius:28px 28px 0 0;padding:12px 16px 110px;z-index:60}
+.handle{width:45px;height:5px;background:#444;border-radius:10px;margin:0 auto 14px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;text-align:center}
+.g-item{cursor:pointer}
+.g-icon{width:52px;height:52px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;margin:0 auto 5px}
+.g-item span{font-size:11px;color:#ddd}
+.studio-box{position:relative;z-index:10;margin:16px;background:#fff;border-radius:24px;padding:18px;color:#111}
+.studio-box h2{text-align:center;color:#8e44ad;font-size:18px}
+.opt{display:flex;justify-content:space-between;align-items:center;background:#f3e8ff;padding:14px;border-radius:16px;margin-top:10px;cursor:pointer;font-weight:bold}
+.opt.active{background:#8e44ad;color:#fff}
+.btn{width:100%;background:#ff2d92;color:#fff;border:none;padding:15px;border-radius:16px;font-size:16px;font-weight:bold;margin-top:14px;cursor:pointer}
+.btn:active{transform:scale(.97)}
+.rec-box{position:relative;z-index:10;margin:16px;background:rgba(0,0,0,.8);color:#fff;border-radius:24px;padding:20px;text-align:center;max-height:calc(100% - 90px);overflow-y:auto}
+.timer{font-size:42px;font-weight:bold;color:#ff2d55;font-variant-numeric:tabular-nums}
+.meter{height:60px;display:flex;align-items:center;justify-content:center;gap:3px;margin:12px 0;overflow:hidden}
+.bar{width:5px;background:linear-gradient(to top,#ff2d55,#8e44ad);border-radius:3px;height:4px;transition:height .08s ease}
+.rec-dot{display:inline-block;width:10px;height:10px;background:#ff2d55;border-radius:50%;margin-right:6px;animation:pulse 1s infinite}
+.row{display:flex;gap:10px;margin-top:14px}
+.row button{flex:1;padding:14px;border-radius:14px;border:none;font-weight:bold;cursor:pointer;font-size:14px}
+.play-bar{display:flex;align-items:center;gap:10px;background:#222;padding:10px;border-radius:14px;margin-top:10px}
+.play-bar button{background:#8e44ad;color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:16px;cursor:pointer;flex-shrink:0}
+.play-bar input[type=range],.trim-bar input[type=range]{flex:1;accent-color:#ff2d92}
+.trim-bar{background:#222;padding:12px;border-radius:14px;margin-top:10px}
+.trim-bar label{font-size:12px;color:#aaa;display:block;margin-bottom:6px}
+.music-select{background:#222;padding:12px;border-radius:14px;margin-top:10px;text-align:right}
+.music-select select{width:100%;padding:10px;border-radius:10px;background:#333;color:#fff;border:none;font-size:14px}
+.page{position:relative;z-index:10;margin:16px;background:#fff;border-radius:22px;padding:18px;color:#111;flex:1;overflow:auto;margin-bottom:110px}
+.page input[type=text]{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin:12px 0;font-size:14px;outline:none}
+.msg{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #eee;cursor:pointer}
+.rec-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#f5f5f5;border-radius:12px;margin-top:8px;gap:8px}
+.rec-item b{color:#8e44ad;font-size:13px}
+.rec-item small{color:#666;font-size:11px;display:block}
+.rec-item .actions{display:flex;gap:6px}
+.rec-item .actions button{border:none;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold}
+#toast{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:20px;font-weight:bold;z-index:100;display:none;box-shadow:0 4px 12px rgba(0,0,0,.3);max-width:90%;text-align:center}
+#toast.show{display:block}
+.permission-modal{position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.permission-modal.show{display:flex}
+.permission-card{background:#fff;border-radius:22px;padding:24px;text-align:center;max-width:320px}
+.permission-card h3{color:#8e44ad;margin-bottom:10px}
+.permission-card p{color:#666;font-size:14px;margin-bottom:16px;line-height:1.6}
+.stories{position:relative;z-index:10;display:flex;gap:12px;padding:0 14px 6px;overflow-x:auto}.story{text-align:center;color:#fff;font-size:11px;flex-shrink:0;cursor:pointer}.story div{width:54px;height:54px;border-radius:50%;border:3px solid #ff2d92;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(0,0,0,.4);margin-bottom:3px}
+.gifts{display:none;gap:14px;background:rgba(0,0,0,.7);padding:10px 16px;border-radius:16px;font-size:30px;width:100%;justify-content:center}.gifts.show{display:flex}.gifts span{cursor:pointer}
+.fl{position:absolute;bottom:150px;font-size:30px;z-index:20;pointer-events:none;animation:flo 1.8s ease-out forwards}@keyframes flo{to{transform:translateY(-320px);opacity:0}}
+.call{display:flex;gap:6px}.call button{border:none;background:#f3e8ff;border-radius:50%;width:38px;height:38px;font-size:16px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="phone">
+<div id="toast"></div>
+
+<div class="permission-modal" id="permModal"><div class="permission-card">
+  <div style="font-size:48px">🎤</div><h3>إذن الميكروفون</h3>
+  <p>باش تسجل صوتك، خاصنا إذن الميكروفون. غادي يطلب منك المتصفح توافق.</p>
+  <button class="btn" onclick="requestMic()">سمح للميكروفون</button>
+  <button class="btn" style="background:#999" onclick="closePermModal()">إلغاء</button>
+</div></div>
+
+<div class="screen active" id="s1"><div class="bg"></div>
+<div class="top"><div style="display:flex;align-items:center;gap:10px"><div class="avatar">👩</div><div><b>Sara El Fassi</b><div style="font-size:11px;opacity:.8">@sara • <span id="folBtn" onclick="toggleFollow()" style="background:#ff2d92;padding:2px 8px;border-radius:10px;cursor:pointer">+ تابع</span></div></div></div><div style="font-size:22px">🔍 ⚙️</div></div>
+<div class="stories"><div class="story" onclick="toast('➕ قصتك')"><div>➕</div>قصتك</div><div class="story" onclick="toast('قصة Ahmed')"><div>👦</div>Ahmed</div><div class="story" onclick="toast('قصة Laila')"><div>👩</div>Laila</div><div class="story" onclick="toast('قصة Youssef')"><div>🧔</div>Youssef</div></div>
+<div class="live">● LIVE 👁️ 12.4K</div>
+<div class="side">
+  <div onclick="likeIt()">❤️<br><span id="likeN">45.6K</span></div>
+  <div onclick="$('cIn').focus()">💬<br><span>892</span></div>
+  <div onclick="toast('مشاركة')">↗️<br><span>شارك</span></div>
+  <div onclick="toggleGifts()">🎁<br><span>هدية</span></div>
+</div>
+<div class="comments"><div id="cList" style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;width:100%"><div class="comment"><b>Ahmed:</b> صوتك زوين 🔥</div><div class="comment"><b>Laila:</b> ما شاء الله 🤍</div></div>
+<div id="gifts" class="gifts"><span onclick="sendGift('🌹','وردة')">🌹</span><span onclick="sendGift('🦁','أسد')">🦁</span><span onclick="sendGift('🚀','صاروخ')">🚀</span><span onclick="sendGift('👑','تاج')">👑</span></div>
+<div style="display:flex;gap:6px;width:100%"><input id="cIn" placeholder="اكتب تعليق..." style="flex:1;padding:10px 14px;border-radius:20px;border:none;background:rgba(0,0,0,.6);color:#fff;outline:none"><button onclick="addComment()" style="border:none;background:#ff2d92;color:#fff;border-radius:50%;width:40px;height:40px">➤</button></div></div>
+</div>
+
+<div class="screen" id="s2"><div class="bg"></div>
+<div class="top"><b onclick="show('s1')">‹ رجوع</b><b>منشئ المحتوى</b><span onclick="show('s1')">✕</span></div>
+<div class="sheet"><div class="handle"></div><div class="grid">
+  <div class="g-item" onclick="toast('📷 الكاميرا')"><div class="g-icon" style="background:#ff3b30">📷</div><span>كاميرا</span></div>
+  <div class="g-item" onclick="show('s3')"><div class="g-icon" style="background:#8e44ad">🎙️</div><span>استوديو</span></div>
+  <div class="g-item" onclick="toast('📡 مباشر')"><div class="g-icon" style="background:#ff2d55">📡</div><span>مباشر</span></div>
+  <div class="g-item" onclick="toast('نص')"><div class="g-icon" style="background:#ff9500">Aa</div><span>نص</span></div>
+  <div class="g-item" onclick="toast('صورة')"><div class="g-icon" style="background:#34c759">🖼️</div><span>صورة</span></div>
+  <div class="g-item" onclick="toast('فيديو')"><div class="g-icon" style="background:#007aff">▶️</div><span>فيديو</span></div>
+  <div class="g-item" onclick="toast('موسيقى')"><div class="g-icon" style="background:#ff2d92">🎵</div><span>موسيقى</span></div>
+  <div class="g-item" onclick="toast('صوت')"><div class="g-icon" style="background:#5856d6">🎧</div><span>صوت</span></div>
+  <div class="g-item" onclick="toast('المزيد')"><div class="g-icon" style="background:#333">•••</div><span>المزيد</span></div>
+  <div class="g-item" onclick="toast('قوالب')"><div class="g-icon" style="background:#ffcc00">✨</div><span>قوالب</span></div>
+</div></div></div>
+
+<div class="screen" id="s3"><div class="bg"></div>
+<div class="top"><b onclick="show('s2')">‹ رجوع</b><b>🎙️ استوديو صوتي</b><span onclick="show('s1')">✕</span></div>
+<div class="studio-box">
+  <h2>صوت نقي - ستوديو جميل</h2>
+  <p style="text-align:center;font-size:13px;color:#666;margin-top:6px">تسجيل حقيقي بالميكروفون</p>
+  <div class="opt active" data-t="📖 قرآن" onclick="selectOpt(this)">📖 قرآن <span>✓</span></div>
+  <div class="opt" data-t="🎤 غناء" onclick="selectOpt(this)">🎤 غناء <span></span></div>
+  <div class="opt" data-t="🪶 شعر" onclick="selectOpt(this)">🪶 شعر <span></span></div>
+  <div class="opt" data-t="📚 قصص" onclick="selectOpt(this)">📚 قصص <span></span></div>
+  <button class="btn" onclick="prepareRecording()">▶ ابدأ التسجيل</button>
+  <button class="btn" style="background:#333;margin-top:8px" onclick="show('s8')">📚 تسجيلاتي المحفوظة</button>
+</div></div>
+
+<div class="screen" id="s4"><div class="bg"></div>
+<div class="top"><b onclick="backFromRec()">‹ رجوع</b><b id="recTopTitle">🔴 جاري التسجيل</b><span onclick="backFromRec();show('s1')">✕</span></div>
+<div class="rec-box">
+  <div id="recTitle">📖 قرآن</div>
+  <div class="timer"><span id="timer">00:00</span><span class="rec-dot" id="recDot"></span></div>
+  <div class="meter" id="meter"></div>
+  <div id="statusText" style="background:#8e44ad;padding:10px;border-radius:12px;margin:10px 0;font-size:13px">✨ جاري التسجيل...</div>
+  <div class="play-bar" id="playBar" style="display:none">
+    <button id="playBtn" onclick="togglePlay()">▶</button>
+    <input type="range" id="seek" min="0" max="100" value="0" oninput="seekAudio(this.value)">
+    <span id="playTime" style="font-size:12px;color:#aaa;min-width:40px">0:00</span>
+  </div>
+  <div class="trim-bar" id="trimBar" style="display:none">
+    <label>✂️ قص التسجيل</label>
+    <div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px;color:#aaa">بداية</span><input type="range" id="trimStart" min="0" max="100" value="0" oninput="updateTrim()"><span id="trimStartVal" style="font-size:11px;color:#ff2d92;min-width:32px">0:00</span></div>
+    <div style="display:flex;gap:8px;align-items:center"><span style="font-size:11px;color:#aaa">نهاية</span><input type="range" id="trimEnd" min="0" max="100" value="100" oninput="updateTrim()"><span id="trimEndVal" style="font-size:11px;color:#ff2d92;min-width:32px">0:00</span></div>
+  </div>
+  <div class="music-select" id="musicSelect" style="display:none">
+    <label style="font-size:12px;color:#aaa;display:block;margin-bottom:6px">🎵 موسيقى خلفية (مع المعاينة)</label>
+    <select id="musicChoice" onchange="applyMusic()">
+      <option value="">بدون موسيقى</option><option value="calm">🎹 هادئة</option><option value="hype">🎸 حماسية</option><option value="classic">🎻 كلاسيكية</option>
+    </select>
+    <input type="range" id="musicVol" min="0" max="100" value="30" oninput="updateMusicVol()" style="margin-top:8px;width:100%;accent-color:#ff2d92">
+  </div>
+  <div class="row" id="pauseRow">
+    <button style="background:#ffcc00;color:#000" id="pauseBtn" onclick="togglePause()">⏸ إيقاف مؤقت</button>
+    <button style="background:#ff2d55;color:#fff" onclick="finishRec()">■ إنهاء</button>
+  </div>
+  <div class="row" id="afterRecRow" style="display:none">
+    <button style="background:#999;color:#fff" onclick="resetRec()">🔄 عاود</button>
+    <button style="background:#007aff;color:#fff" onclick="downloadRec()">⬇ WAV</button>
+    <button style="background:#34c759;color:#fff" onclick="publishRec()">✅ انشر</button>
+  </div>
+</div></div>
+
+<div class="screen" id="s5"><div class="bg"></div>
+<div class="top"><b>🔍 بحث</b><span onclick="show('s1')">✕</span></div>
+<div class="page"><h3>بحث</h3><input type="text" placeholder="قلب فتسجيلاتك..."><p style="color:#888;text-align:center;margin-top:20px">ما كاين حتى نتيجة</p></div></div>
+
+<div class="screen" id="s6"><div class="bg"></div>
+<div class="top"><b>💬 رسائل</b><span onclick="show('s1')">✕</span></div>
+<div class="page"><h3>رسائل</h3>
+<div class="msg" onclick="toast('محادثة Ahmed')">👦 <b>Ahmed</b><span style="flex:1"></span><div class="call"><button onclick="event.stopPropagation();startCall('Ahmed',0)">📞</button><button onclick="event.stopPropagation();startCall('Ahmed',1)">🎥</button></div></div>
+<div class="msg" onclick="toast('محادثة Laila')">👩 <b>Laila</b><span style="flex:1"></span><div class="call"><button onclick="event.stopPropagation();startCall('Laila',0)">📞</button><button onclick="event.stopPropagation();startCall('Laila',1)">🎥</button></div></div>
+<div class="msg" onclick="toast('محادثة Youssef')">🧔 <b>Youssef</b><span style="flex:1"></span><div class="call"><button onclick="event.stopPropagation();startCall('Youssef',0)">📞</button><button onclick="event.stopPropagation();startCall('Youssef',1)">🎥</button></div></div>
+</div>
+<div class="permission-modal" id="callModal"><div class="permission-card" style="width:280px"><div style="font-size:48px">👤</div><h3 id="callName"></h3><p id="callSt"></p><button class="btn" style="background:#ff2d55" onclick="endCall()">📵 أنهي</button></div></div></div>
+
+<div class="screen" id="s7"><div class="bg"></div>
+<div class="top"><b>👤 حسابي</b><span onclick="show('s1')">✕</span></div>
+<div class="page" style="text-align:center">
+  <div style="font-size:60px">👤</div><h3>حسابي</h3>
+  <button class="btn" style="background:#000" onclick="show('s8')">📚 تسجيلاتي</button>
+</div></div>
+
+<div class="screen" id="s8"><div class="bg"></div>
+<div class="top"><b onclick="show('s3')">‹ رجوع</b><b>📚 تسجيلاتي المحفوظة</b><span onclick="show('s1')">✕</span></div>
+<div class="page"><h3>التسجيلات المحفوظة</h3>
+  <p style="font-size:12px;color:#666;margin-top:6px">كتبقى محفوظة حتى بعد ما تسد التطبيق (IndexedDB)</p>
+  <div id="savedList" style="margin-top:14px"></div></div></div>
+
+<div class="bottom"><div class="nav">
+  <div class="nav-item" id="nav-s7" onclick="show('s7')"><i>👤</i>حسابي</div>
+  <div class="nav-item" id="nav-s6" onclick="show('s6')"><i>💬</i>رسائل</div>
+  <div class="plus" onclick="show('s2')">+</div>
+  <div class="nav-item" id="nav-s5" onclick="show('s5')"><i>🔍</i>بحث</div>
+  <div class="nav-item active" id="nav-s1" onclick="show('s1')"><i>🏠</i>الرئيسية</div>
+</div></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+let toastTimer;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const n=$('nav-'+id);if(n)n.classList.add('active');
+  if(id!=='s4'){stopAudio()}
+  if(id==='s8')loadSavedList();
+  if(id==='s1')loadHome();
+}
+async function loadHome(){
+  const b=$('homeList');if(!b)return;
+  try{
+    const all=(await getAllFromDB()).reverse().slice(0,3);
+    if(!all.length){b.innerHTML='<p style="color:#888">ما عندك حتى تسجيل بعد</p>';return}
+    b.innerHTML='';
+    all.forEach(r=>{const d=document.createElement('div');d.className='rec-item';d.innerHTML='<div><b></b><small></small></div>';d.querySelector('b').textContent=r.title;d.querySelector('small').textContent=fmt(r.duration);d.onclick=()=>show('s8');b.appendChild(d)});
+  }catch(e){b.innerHTML=''}
+}
+function selectOpt(el){
+  document.querySelectorAll('.opt').forEach(o=>{o.classList.remove('active');o.querySelector('span').textContent=''});
+  el.classList.add('active');el.querySelector('span').textContent='✓';
+}
+
+/* Social features */
+let likes=45600;
+function floatEmoji(e){const s=document.createElement('span');s.className='fl';s.textContent=e;s.style.right=(20+Math.random()*50)+'px';$('s1').appendChild(s);setTimeout(()=>s.remove(),1800)}
+function likeIt(){likes++;$('likeN').textContent=(likes/1000).toFixed(1)+'K';for(let i=0;i<3;i++)setTimeout(()=>floatEmoji('❤️'),i*120)}
+function addComment(t,who){
+  const v=t||$('cIn').value.trim();if(!v)return;
+  const d=document.createElement('div');d.className='comment';
+  const b=document.createElement('b');b.textContent=(who||'أنت')+': ';d.appendChild(b);d.appendChild(document.createTextNode(v));
+  $('cList').appendChild(d);$('cIn').value='';
+  while($('cList').children.length>5)$('cList').firstChild.remove();
+}
+function toggleGifts(){$('gifts').classList.toggle('show')}
+function sendGift(e,n){toggleGifts();for(let i=0;i<6;i++)setTimeout(()=>floatEmoji(e),i*150);addComment('🎁 أرسل '+n)}
+let fol=false;
+function toggleFollow(){fol=!fol;$('folBtn').textContent=fol?'✓ كتتابع':'+ تابع'}
+let callT=0;
+function startCall(n,v){$('callName').textContent=(v?'🎥 ':'📞 ')+n;$('callSt').textContent='كيرن...';$('callModal').classList.add('show');clearInterval(callT);let s=-2;callT=setInterval(()=>{s++;if(s>=0)$('callSt').textContent=fmt(s)},1000)}
+function endCall(){clearInterval(callT);$('callModal').classList.remove('show')}
+
+/* IndexedDB */
+let db=null;
+function openDB(){return new Promise((res,rej)=>{
+  if(db)return res(db);
+  const r=indexedDB.open('LimazyanDB',1);
+  r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('recordings'))d.createObjectStore('recordings',{keyPath:'id',autoIncrement:true})};
+  r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=e=>rej(e.target.error);
+})}
+async function dbOp(mode,fn){const d=await openDB();return new Promise((res,rej)=>{const r=fn(d.transaction('recordings',mode).objectStore('recordings'));r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+const saveToDB=(blob,m)=>dbOp('readwrite',s=>s.add({blob,title:m.title,duration:m.duration,size:blob.size,date:Date.now(),type:m.type||'wav'}));
+const getAllFromDB=()=>dbOp('readonly',s=>s.getAll());
+const deleteFromDB=id=>dbOp('readwrite',s=>s.delete(id));
+
+loadHome();
+/* Mic + recording */
+let stream=null,mr=null,chunks=[],actx=null,analyser=null,raf=0,tInt=0,secs=0,paused=false;
+let blob=null,url=null,audio=null,dur=0,discard=false;
+const bars=[];
+for(let i=0;i<32;i++){const b=document.createElement('div');b.className='bar';$('meter').appendChild(b);bars.push(b)}
+
+function closePermModal(){$('permModal').classList.remove('show')}
+async function requestMic(){
+  closePermModal();
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    startRec();
+  }catch(e){toast('⚠️ ما قدرناش نوصلو للميكروفون. تأكد من الإذن.')}
+}
+function prepareRecording(){
+  if(!navigator.mediaDevices||!window.MediaRecorder){toast('المتصفح ما كيدعمش التسجيل');return}
+  if(stream&&stream.active)startRec();else $('permModal').classList.add('show');
+}
+function startRec(){
+  const t=document.querySelector('.opt.active').dataset.t;
+  $('recTitle').textContent=t;
+  resetUI();
+  mr=new MediaRecorder(stream);chunks=[];discard=false;
+  mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  mr.onstop=onStopped;
+  mr.start();secs=0;paused=false;
+  $('timer').textContent='00:00';
+  tInt=setInterval(()=>{if(!paused){secs++;$('timer').textContent=String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0')}},1000);
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state==='suspended')actx.resume();
+  analyser=actx.createAnalyser();analyser.fftSize=64;
+  actx.createMediaStreamSource(stream).connect(analyser);
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  const loop=()=>{
+    analyser.getByteFrequencyData(data);
+    bars.forEach((b,i)=>{b.style.height=paused?'4px':Math.max(4,data[i%data.length]/255*56)+'px'});
+    raf=requestAnimationFrame(loop);
+  };
+  loop();
+  show('s4');
+}
+function resetUI(){
+  $('recTopTitle').textContent='🔴 جاري التسجيل';
+  $('statusText').textContent='✨ جاري التسجيل...';
+  $('recDot').style.display='inline-block';
+  ['playBar','trimBar','musicSelect','afterRecRow'].forEach(i=>$(i).style.display='none');
+  $('pauseRow').style.display='flex';
+  $('pauseBtn').textContent='⏸ إيقاف مؤقت';
+  $('musicChoice').value='';
+}
+function stopLive(){
+  clearInterval(tInt);cancelAnimationFrame(raf);
+  bars.forEach(b=>b.style.height='4px');
+}
+function togglePause(){
+  if(!mr)return;
+  if(paused){mr.resume();paused=false;$('pauseBtn').textContent='⏸ إيقاف مؤقت';$('statusText').textContent='✨ جاري التسجيل...'}
+  else{mr.pause();paused=true;$('pauseBtn').textContent='▶ كمل';$('statusText').textContent='⏸ متوقف مؤقتا'}
+}
+function finishRec(){
+  if(!mr||mr.state==='inactive')return;
+  stopLive();mr.stop();
+}
+function onStopped(){
+  if(discard)return;
+  blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+  dur=Math.max(1,secs);
+  if(url)URL.revokeObjectURL(url);
+  url=URL.createObjectURL(blob);
+  audio=new Audio(url);
+  audio.ontimeupdate=()=>{
+    const te=$('trimEnd').value/10;
+    if(audio.currentTime>=te){audio.pause();audio.currentTime=+$('trimStart').value/10;$('playBtn').textContent='▶';stopMusic()}
+    $('seek').value=dur?audio.currentTime/dur*100:0;
+    $('playTime').textContent=fmt(audio.currentTime);
+  };
+  audio.onended=()=>{$('playBtn').textContent='▶';stopMusic()};
+  $('trimStart').max=$('trimEnd').max=dur*10;
+  $('trimStart').value=0;$('trimEnd').value=dur*10;
+  updateTrim();
+  $('recTopTitle').textContent='✅ تسجيل جاهز';
+  $('statusText').textContent='🎧 سمع وقص وانشر';
+  $('recDot').style.display='none';
+  ['playBar','trimBar','musicSelect'].forEach(i=>$(i).style.display='block');
+  $('pauseRow').style.display='none';
+  $('afterRecRow').style.display='flex';
+}
+function resetRec(){stopAudio();show('s3');setTimeout(prepareRecording,50)}
+function backFromRec(){
+  if(mr&&mr.state!=='inactive'){discard=true;stopLive();mr.stop()}
+  stopAudio();show('s3');
+}
+
+/* Playback + trim */
+function togglePlay(){
+  if(!audio)return;
+  if(audio.paused){
+    const ts=+$('trimStart').value/10;
+    if(audio.currentTime<ts||audio.currentTime>=$('trimEnd').value/10)audio.currentTime=ts;
+    audio.play();$('playBtn').textContent='⏸';startMusic();
+  }else{audio.pause();$('playBtn').textContent='▶';stopMusic()}
+}
+function seekAudio(v){if(audio)audio.currentTime=v/100*dur}
+function updateTrim(){
+  let s=+$('trimStart').value,e=+$('trimEnd').value;
+  if(s>e-5){if(document.activeElement===$('trimStart')){s=Math.max(0,e-5);$('trimStart').value=s}else{e=Math.min(dur*10,s+5);$('trimEnd').value=e}}
+  $('trimStartVal').textContent=fmt(s/10);$('trimEndVal').textContent=fmt(e/10);
+}
+function stopAudio(){
+  if(audio&&!audio.paused)audio.pause();
+  $('playBtn').textContent='▶';stopMusic();
+}
+
+/* Synth background music (no network needed) */
+const songs={
+  calm:{t:.9,w:'sine',n:[261.6,329.6,392,329.6,293.7,349.2,440,349.2]},
+  hype:{t:.28,w:'sawtooth',n:[220,261.6,329.6,261.6,246.9,293.7,370,293.7]},
+  classic:{t:.55,w:'triangle',n:[392,440,493.9,523.3,493.9,440,392,329.6]}
+};
+let mGain=null,mTimer=0,mStep=0;
+function startMusic(){
+  stopMusic();
+  const s=songs[$('musicChoice').value];if(!s||!actx)return;
+  if(actx.state==='suspended')actx.resume();
+  mGain=actx.createGain();mGain.gain.value=$('musicVol').value/100*.3;mGain.connect(actx.destination);
+  const tick=()=>{
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.type=s.w;o.frequency.value=s.n[mStep++%s.n.length];
+    g.gain.setValueAtTime(.8,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+s.t*.95);
+    o.connect(g);g.connect(mGain);o.start();o.stop(actx.currentTime+s.t);
+  };
+  tick();mTimer=setInterval(tick,s.t*1000);
+}
+function stopMusic(){clearInterval(mTimer);mTimer=0;if(mGain){try{mGain.disconnect()}catch(e){}mGain=null}}
+function applyMusic(){if(audio&&!audio.paused)startMusic()}
+function updateMusicVol(){if(mGain)mGain.gain.value=$('musicVol').value/100*.3}
+
+/* WAV export (trimmed) */
+async function trimmedWav(){
+  const buf=await actx.decodeAudioData(await blob.arrayBuffer());
+  const sr=buf.sampleRate,a=Math.floor($('trimStart').value/10*sr),b=Math.min(buf.length,Math.floor($('trimEnd').value/10*sr));
+  const ch=buf.getChannelData(0).subarray(a,b),n=ch.length,out=new DataView(new ArrayBuffer(44+n*2));
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)out.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF');out.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');out.setUint32(16,16,true);out.setUint16(20,1,true);out.setUint16(22,1,true);
+  out.setUint32(24,sr,true);out.setUint32(28,sr*2,true);out.setUint16(32,2,true);out.setUint16(34,16,true);w(36,'data');out.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++){const v=Math.max(-1,Math.min(1,ch[i]));out.setInt16(44+i*2,v<0?v*0x8000:v*0x7fff,true)}
+  return {blob:new Blob([out],{type:'audio/wav'}),duration:Math.round(n/sr)};
+}
+function saveFile(b,name){const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+async function downloadRec(){
+  try{toast('⏳ كنحضرو الملف...');const r=await trimmedWav();saveFile(r.blob,'limazyan-'+Date.now()+'.wav');toast('⬇ تحمّل الملف')}
+  catch(e){toast('⚠️ فشل التصدير')}
+}
+async function publishRec(){
+  try{
+    stopAudio();toast('⏳ كنحفظو...');
+    const r=await trimmedWav();
+    await saveToDB(r.blob,{title:$('recTitle').textContent,duration:r.duration,type:'wav'});
+    toast('✅ تنشر وتحفظ');show('s8');
+  }catch(e){toast('⚠️ فشل الحفظ')}
+}
+
+/* Saved list */
+let listAudio=null;
+async function loadSavedList(){
+  const box=$('savedList');
+  try{
+    const all=(await getAllFromDB()).reverse();
+    if(!all.length){box.innerHTML='<p style="color:#888;text-align:center;padding:20px">ما عندك حتى تسجيل بعد 🎙️</p>';return}
+    box.innerHTML='';
+    all.forEach(r=>{
+      const d=document.createElement('div');d.className='rec-item';
+      d.innerHTML='<div><b></b><small></small></div><div class="actions"><button style="background:#8e44ad;color:#fff">▶</button><button style="background:#007aff;color:#fff">⬇</button><button style="background:#ff2d55;color:#fff">🗑</button></div>';
+      d.querySelector('b').textContent=r.title;
+      d.querySelector('small').textContent=fmt(r.duration)+' • '+(r.size/1024).toFixed(0)+' KB • '+new Date(r.date).toLocaleDateString('ar');
+      const [p,dl,del]=d.querySelectorAll('button');
+      p.onclick=()=>{
+        if(listAudio){listAudio.pause();URL.revokeObjectURL(listAudio.src)}
+        listAudio=new Audio(URL.createObjectURL(r.blob));listAudio.play();
+      };
+      dl.onclick=()=>saveFile(r.blob,'limazyan-'+r.id+'.'+(r.type||'wav'));
+      del.onclick=async()=>{await deleteFromDB(r.id);toast('🗑 تمسح');loadSavedList()};
+      box.appendChild(d);
+    });
+  }catch(e){box.innerHTML='<p style="color:#c00">⚠️ التخزين ما خدامش فهاد المتصفح</p>'}
+}
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
