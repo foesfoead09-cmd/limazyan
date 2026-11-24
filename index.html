@@ -12,7 +12,7 @@ html,body{height:100%;background:#000;overflow:hidden}
 .screen{position:absolute;inset:0;display:none;flex-direction:column}
 .screen.active{display:flex;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
-.bg{position:absolute;inset:0;background:linear-gradient(160deg,#3a1c71,#d76d77 55%,#ffaf7b)}
+.bg{position:absolute;inset:0;background:#1a1025}
 .bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 35%,transparent 55%,rgba(0,0,0,.85))}
 .top{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px;color:#fff;padding-top:max(14px,env(safe-area-inset-top))}
 .top b{cursor:pointer}
@@ -90,20 +90,22 @@ html,body{height:100%;background:#000;overflow:hidden}
   <button class="btn" style="background:#999" onclick="closePermModal()">إلغاء</button>
 </div></div>
 
-<div class="screen active" id="s1"><div class="bg"></div>
-<div class="top"><div style="display:flex;align-items:center;gap:10px"><div class="avatar">👩</div><div><b>Sara El Fassi</b><div style="font-size:11px;opacity:.8">@sara • <span id="folBtn" onclick="toggleFollow()" style="background:#ff2d92;padding:2px 8px;border-radius:10px;cursor:pointer">+ تابع</span></div></div></div><div style="font-size:22px">🔍 ⚙️</div></div>
-<div class="stories"><div class="story" onclick="toast('➕ قصتك')"><div>➕</div>قصتك</div><div class="story" onclick="toast('قصة Ahmed')"><div>👦</div>Ahmed</div><div class="story" onclick="toast('قصة Laila')"><div>👩</div>Laila</div><div class="story" onclick="toast('قصة Youssef')"><div>🧔</div>Youssef</div></div>
-<div class="live">● LIVE 👁️ 12.4K</div>
-<div class="side">
-  <div onclick="likeIt()">❤️<br><span id="likeN">45.6K</span></div>
-  <div onclick="$('cIn').focus()">💬<br><span>892</span></div>
-  <div onclick="toast('مشاركة')">↗️<br><span>شارك</span></div>
-  <div onclick="toggleGifts()">🎁<br><span>هدية</span></div>
-</div>
-<div class="comments"><div id="cList" style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;width:100%"><div class="comment"><b>Ahmed:</b> صوتك زوين 🔥</div><div class="comment"><b>Laila:</b> ما شاء الله 🤍</div></div>
-<div id="gifts" class="gifts"><span onclick="sendGift('🌹','وردة')">🌹</span><span onclick="sendGift('🦁','أسد')">🦁</span><span onclick="sendGift('🚀','صاروخ')">🚀</span><span onclick="sendGift('👑','تاج')">👑</span></div>
-<div style="display:flex;gap:6px;width:100%"><input id="cIn" placeholder="اكتب تعليق..." style="flex:1;padding:10px 14px;border-radius:20px;border:none;background:rgba(0,0,0,.6);color:#fff;outline:none"><button onclick="addComment()" style="border:none;background:#ff2d92;color:#fff;border-radius:50%;width:40px;height:40px">➤</button></div></div>
-</div>
+<div class="screen active" id="s0"><div class="bg"></div>
+<div class="top"><b>🎙️ Limazyan Studio</b></div>
+<div class="studio-box"><h2>مرحبا بيك 👋</h2>
+<input id="aEmail" type="email" placeholder="الإيميل" style="width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin-top:12px;font-size:14px;direction:ltr;text-align:left;outline:none">
+<input id="aPass" type="password" placeholder="كلمة السر (6 حروف على الأقل)" style="width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;margin-top:12px;font-size:14px;direction:ltr;text-align:left;outline:none">
+<div id="aErr" style="color:#c00;font-size:13px;margin-top:10px;min-height:18px;text-align:center"></div>
+<button class="btn" onclick="doLogin()">دخول</button>
+<button class="btn" style="background:#333;margin-top:8px" onclick="doSignup()">إنشاء حساب جديد</button>
+</div></div>
+
+<div class="screen" id="s1"><div class="bg"></div>
+<div class="top"><b>🎙️ Limazyan Studio</b></div>
+<div class="page"><h3>مرحبا 👋</h3>
+<button class="btn" onclick="show('s3')">🎙️ ابدأ تسجيل جديد</button>
+<h3 style="margin-top:20px">آخر تسجيلاتك</h3>
+<div id="homeList" style="margin-top:8px"></div></div></div>
 
 <div class="screen" id="s2"><div class="bg"></div>
 <div class="top"><b onclick="show('s1')">‹ رجوع</b><b>منشئ المحتوى</b><span onclick="show('s1')">✕</span></div>
@@ -174,18 +176,14 @@ html,body{height:100%;background:#000;overflow:hidden}
 
 <div class="screen" id="s6"><div class="bg"></div>
 <div class="top"><b>💬 رسائل</b><span onclick="show('s1')">✕</span></div>
-<div class="page"><h3>رسائل</h3>
-<div class="msg" onclick="toast('محادثة Ahmed')">👦 <b>Ahmed</b><span style="flex:1"></span><div class="call"><button onclick="event.stopPropagation();startCall('Ahmed',0)">📞</button><button onclick="event.stopPropagation();startCall('Ahmed',1)">🎥</button></div></div>
-<div class="msg" onclick="toast('محادثة Laila')">👩 <b>Laila</b><span style="flex:1"></span><div class="call"><button onclick="event.stopPropagation();startCall('Laila',0)">📞</button><button onclick="event.stopPropagation();startCall('Laila',1)">🎥</button></div></div>
-<div class="msg" onclick="toast('محادثة Youssef')">🧔 <b>Youssef</b><span style="flex:1"></span><div class="call"><button onclick="event.stopPropagation();startCall('Youssef',0)">📞</button><button onclick="event.stopPropagation();startCall('Youssef',1)">🎥</button></div></div>
-</div>
-<div class="permission-modal" id="callModal"><div class="permission-card" style="width:280px"><div style="font-size:48px">👤</div><h3 id="callName"></h3><p id="callSt"></p><button class="btn" style="background:#ff2d55" onclick="endCall()">📵 أنهي</button></div></div></div>
+<div class="page"><h3>رسائل</h3><p style="color:#888;text-align:center;margin-top:20px">ما عندك حتى رسالة</p></div></div>
 
 <div class="screen" id="s7"><div class="bg"></div>
 <div class="top"><b>👤 حسابي</b><span onclick="show('s1')">✕</span></div>
 <div class="page" style="text-align:center">
-  <div style="font-size:60px">👤</div><h3>حسابي</h3>
+  <div style="font-size:60px">👤</div><h3>حسابي</h3><p id="acctEmail" style="color:#666;margin:6px 0 12px"></p>
   <button class="btn" style="background:#000" onclick="show('s8')">📚 تسجيلاتي</button>
+  <button class="btn" style="background:#999" onclick="doLogout()">🚪 خروج</button>
 </div></div>
 
 <div class="screen" id="s8"><div class="bg"></div>
@@ -194,7 +192,7 @@ html,body{height:100%;background:#000;overflow:hidden}
   <p style="font-size:12px;color:#666;margin-top:6px">كتبقى محفوظة حتى بعد ما تسد التطبيق (IndexedDB)</p>
   <div id="savedList" style="margin-top:14px"></div></div></div>
 
-<div class="bottom"><div class="nav">
+<div class="bottom" id="bottomNav" style="display:none"><div class="nav">
   <div class="nav-item" id="nav-s7" onclick="show('s7')"><i>👤</i>حسابي</div>
   <div class="nav-item" id="nav-s6" onclick="show('s6')"><i>💬</i>رسائل</div>
   <div class="plus" onclick="show('s2')">+</div>
@@ -213,6 +211,7 @@ function show(id){
   $(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const n=$('nav-'+id);if(n)n.classList.add('active');
+  $('bottomNav').style.display=id==='s0'?'none':'';
   if(id!=='s4'){stopAudio()}
   if(id==='s8')loadSavedList();
   if(id==='s1')loadHome();
@@ -451,6 +450,29 @@ async function loadSavedList(){
   }catch(e){box.innerHTML='<p style="color:#c00">⚠️ التخزين ما خدامش فهاد المتصفح</p>'}
 }
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+const app=initializeApp({
+  apiKey:"AIzaSyBi8G5R8UNofEQzeho77fzBYOBwfeauGpY",
+  authDomain:"limazyan.firebaseapp.com",
+  projectId:"limazyan",
+  storageBucket:"limazyan.firebasestorage.app",
+  messagingSenderId:"678067121929",
+  appId:"1:678067121929:web:773ead8db599e404b42dd8"
+});
+const auth=getAuth(app);
+const M={'auth/invalid-email':'الإيميل ماشي صحيح','auth/invalid-credential':'الإيميل أو كلمة السر غلط','auth/user-not-found':'ما كاين حتى حساب بهاد الإيميل','auth/wrong-password':'كلمة السر غلط','auth/email-already-in-use':'هاد الإيميل مسجل من قبل','auth/weak-password':'كلمة السر ضعيفة (6 حروف على الأقل)','auth/missing-password':'كتب كلمة السر','auth/network-request-failed':'ما كاينش نيت','auth/operation-not-allowed':'تسجيل الدخول بالإيميل ما مفعلش فـ Firebase','auth/too-many-requests':'محاولات بزاف، عاود من بعد'};
+const err=e=>{$('aErr').textContent=M[e.code]||('خطأ: '+e.code)};
+const val=()=>[$('aEmail').value.trim(),$('aPass').value];
+window.doLogin=async()=>{$('aErr').textContent='';try{await signInWithEmailAndPassword(auth,...val())}catch(e){err(e)}};
+window.doSignup=async()=>{$('aErr').textContent='';try{await createUserWithEmailAndPassword(auth,...val())}catch(e){err(e)}};
+window.doLogout=()=>signOut(auth);
+onAuthStateChanged(auth,u=>{
+  if(u){$('acctEmail').textContent=u.email;if($('s0').classList.contains('active'))show('s1')}
+  else show('s0');
+});
 </script>
 </body>
 </html>
